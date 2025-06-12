@@ -24,6 +24,8 @@ def bitrix_webhook():
     """Обработка вебхука от Bitrix24"""
     data = request.json
     
+    print("Webhook called, data:", data)
+    
     # Проверяем, что это комментарий к сделке
     if data.get('event') == 'ONCRMDEALCOMMENTADD':
         comment_data = data.get('data', {})
@@ -44,6 +46,8 @@ def bitrix_webhook():
             
             # Отправляем сообщение в Telegram
             message = f"💬 <b>Сообщение от менеджера:</b>\n\n{comment_text}"
+            print("Telegram ID:", telegram_id)
+            print("Comment text:", comment_text)
             send_telegram_message(telegram_id, message)
     
     return jsonify({"status": "ok"})
