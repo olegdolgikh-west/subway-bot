@@ -92,13 +92,14 @@ def telegram_webhook():
 
 @app.route("/bitrix-to-telegram", methods=["POST"])
 def bitrix_to_telegram():
-    # Логируем всё, что пришло
     with open("bitrix_debug.txt", "w") as f:
         f.write("Headers:\n" + str(request.headers) + "\n\n")
         f.write("Data:\n" + str(request.data) + "\n\n")
         f.write("Form:\n" + str(request.form) + "\n\n")
-        f.write("JSON:\n" + str(request.json) + "\n\n")
-    # ... остальной код ...
+        try:
+            f.write("JSON:\n" + str(request.get_json(force=True)) + "\n\n")
+        except Exception as e:
+            f.write(f"JSON decode error: {e}\n\n")
     return "OK", 200
 
 if __name__ == '__main__':
