@@ -15,13 +15,9 @@ BITRIX_WEBHOOK_DEAL = os.getenv('BITRIX_WEBHOOK_DEAL') or BITRIX_WEBHOOK
 def send_telegram_message(chat_id, text):
     """Отправка сообщения в Telegram"""
     url = f"https://api.telegram.org/bot{TELEGRAM_BOT_TOKEN}/sendMessage"
-    data = {
-        "chat_id": chat_id,
-        "text": text,
-        "parse_mode": "HTML"
-    }
+    data = {"chat_id": chat_id, "text": text, "parse_mode": "HTML"}
     response = requests.post(url, json=data)
-    return response.json()
+    print("Telegram response:", response.text)
 
 @app.route('/webhook/bitrix', methods=['POST'])
 def bitrix_webhook():
