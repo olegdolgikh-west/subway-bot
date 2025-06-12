@@ -10,6 +10,7 @@ app = Flask(__name__)
 # Конфигурация
 TELEGRAM_BOT_TOKEN = os.getenv('TELEGRAM_BOT_TOKEN')
 BITRIX_WEBHOOK = os.getenv('BITRIX_WEBHOOK')
+BITRIX_WEBHOOK_DEAL = os.getenv('BITRIX_WEBHOOK_DEAL') or BITRIX_WEBHOOK
 
 def send_telegram_message(chat_id, text):
     """Отправка сообщения в Telegram"""
@@ -33,7 +34,7 @@ def bitrix_webhook():
         deal_id = comment_data.get('FIELDS', {}).get('ENTITY_ID')
         
         # Получаем информацию о сделке
-        deal_url = f"{BITRIX_WEBHOOK}crm.deal.get.json"
+        deal_url = f"{BITRIX_WEBHOOK_DEAL}crm.deal.get.json"
         deal_params = {"id": deal_id}
         deal_response = requests.get(deal_url, params=deal_params)
         deal_info = deal_response.json().get('result', {})
@@ -63,7 +64,7 @@ def telegram_webhook():
         text = message.get('text', '')
         
         # Получаем список сделок с этим Telegram ID
-        deals_url = f"{BITRIX_WEBHOOK}crm.deal.list.json"
+        deals_url = f"{BITRIX_WEBHOOK_DEAL}crm.deal.list.json"
         deals_params = {
             "filter[UF_CRM_DEAL_TELEGRAM_ID]": str(chat_id),
             "select": ["ID", "TITLE"]
@@ -77,7 +78,7 @@ def telegram_webhook():
             deal_id = deal['ID']
             
             # Добавляем комментарий к сделке
-            comment_url = f"{BITRIX_WEBHOOK}crm.timeline.comment.add.json"
+            comment_url = f"{BITRIX_WEBHOOK_DEAL}crm.timeline.comment.add.json"
             comment_data = {
                 "fields": {
                     "ENTITY_ID": deal_id,
