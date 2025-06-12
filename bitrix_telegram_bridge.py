@@ -90,5 +90,13 @@ def telegram_webhook():
     
     return jsonify({"status": "ok"})
 
+@app.route("/bitrix-to-telegram", methods=["POST"])
+def bitrix_to_telegram():
+    data = request.json
+    with open("bitrix_debug.json", "w") as f:
+        import json
+        json.dump(data, f, indent=2)
+    # ... остальной код ...
+
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000) 
