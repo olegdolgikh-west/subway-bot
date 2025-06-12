@@ -5,14 +5,16 @@ from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, Callb
 import requests
 import json
 import time
+from dotenv import load_dotenv
 
 # Config (replace with os.environ.get for production)
-TELEGRAM_API_TOKEN = "7521077088:AAGvqDSo49qsSc3c53wrUAEj0AZnSbXX6_A"
-BITRIX_WEBHOOK = "https://subwest.bitrix24.ru/rest/8/9wd0tkluq4jgn78m/"
-BITRIX_RESPONSIBLE_ID = 8
-BITRIX_CATEGORY_ID = 2
-BITRIX_STAGE_ID = "C2:NEW"
-BITRIX_DISK_FOLDER_ID = 3848  # <-- ID вашей папки на диске Bitrix24
+load_dotenv()
+TELEGRAM_API_TOKEN = os.getenv("TELEGRAM_API_TOKEN")
+BITRIX_WEBHOOK = os.getenv("BITRIX_WEBHOOK")
+BITRIX_RESPONSIBLE_ID = int(os.getenv("BITRIX_RESPONSIBLE_ID"))
+BITRIX_CATEGORY_ID = int(os.getenv("BITRIX_CATEGORY_ID"))
+BITRIX_STAGE_ID = os.getenv("BITRIX_STAGE_ID")
+BITRIX_DISK_FOLDER_ID = int(os.getenv("BITRIX_DISK_FOLDER_ID"))  # <-- ID вашей папки на диске Bitrix24
 
 # States for ConversationHandler
 ASK_PHONE, ASK_SCREENSHOT = range(2)
