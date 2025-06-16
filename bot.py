@@ -43,9 +43,19 @@ def ask_screenshot(update: Update, context: CallbackContext):
         phone = update.message.text
         logger.info(f"Phone number from text: {phone}")
     context.user_data['phone'] = phone
+    
+    # Отправляем пример скриншота
     update.message.reply_text(
-        "Спасибо! Теперь, пожалуйста, загрузите скриншот из старого приложения Subway с вашим бонусным балансом."
+        "Спасибо! Теперь, пожалуйста, загрузите скриншот из старого приложения Subway с вашим бонусным балансом.\n\n"
+        "Вот пример того, как должен выглядеть скриншот:"
     )
+    
+    # Отправляем пример скриншота
+    update.message.reply_photo(
+        photo='AgACAgIAAxkBAAIBRWhQJb4Z2HLhE8GCrCZs4n6_FyL0AAIh-DEbNSWBSmKQAiqZ2o50AQADAgADeQADNgQ',
+        caption="Пример скриншота с балансом бонусов"
+    )
+    
     return ASK_SCREENSHOT
 
 def handle_screenshot(update: Update, context: CallbackContext):
@@ -76,7 +86,7 @@ def handle_screenshot(update: Update, context: CallbackContext):
             caption=message_text
         )
         
-            update.message.reply_text("✅ Ваша заявка отправлена! Наши сотрудники свяжутся с вами в ближайшее время.")
+        update.message.reply_text("✅ Ваша заявка отправлена! Наши сотрудники свяжутся с вами в ближайшее время.")
         logger.info(f"Successfully forwarded information to group {TARGET_GROUP_ID}")
         
     except Exception as e:
@@ -92,6 +102,11 @@ def cancel(update: Update, context: CallbackContext):
 
 def error_handler(update: Update, context: CallbackContext):
     logger.error(f"Update {update} caused error {context.error}")
+
+def get_file_id(update: Update, context: CallbackContext):
+    if update.message.photo:
+        file_id = update.message.photo[-1].file_id
+        update.message.reply_text(f"File ID: {file_id}")
 
 def main():
     logger.info("Starting bot...")
@@ -111,6 +126,9 @@ def main():
     )
     dp.add_handler(conv_handler)
     dp.add_error_handler(error_handler)
+    
+    # Временно добавляем обработчик для получения file_id
+    dp.add_handler(MessageHandler(Filters.photo, get_file_id))
 
     logger.info("Bot is running...")
     updater.start_polling()
