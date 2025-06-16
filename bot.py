@@ -99,7 +99,10 @@ def main():
     dp = updater.dispatcher
 
     conv_handler = ConversationHandler(
-        entry_points=[CommandHandler('start', start)],
+        entry_points=[
+            CommandHandler('start', start),
+            MessageHandler(Filters.text & ~Filters.command, start)  # Добавляем обработчик для любого текстового сообщения
+        ],
         states={
             ASK_PHONE: [MessageHandler(Filters.contact | Filters.text & ~Filters.command, ask_screenshot)],
             ASK_SCREENSHOT: [MessageHandler(Filters.photo, handle_screenshot)],

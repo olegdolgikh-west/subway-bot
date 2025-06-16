@@ -1,0 +1,16 @@
+[Unit]
+Description=Subway Bonus Transfer Bot
+After=network.target
+
+[Service]
+Type=simple
+User=your_username
+WorkingDirectory=/path/to/subway-bot
+ExecStart=/path/to/subway-bot/start_bot.sh
+Restart=always
+RestartSec=10
+StandardOutput=append:/var/log/subway-bot.log
+StandardError=append:/var/log/subway-bot.error.log
+
+[Install]
+WantedBy=multi-user.target 
