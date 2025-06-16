@@ -76,7 +76,7 @@ def handle_screenshot(update: Update, context: CallbackContext):
             caption=message_text
         )
         
-        update.message.reply_text("✅ Ваша заявка отправлена! Наши сотрудники свяжутся с вами в ближайшее время.")
+            update.message.reply_text("✅ Ваша заявка отправлена! Наши сотрудники свяжутся с вами в ближайшее время.")
         logger.info(f"Successfully forwarded information to group {TARGET_GROUP_ID}")
         
     except Exception as e:
