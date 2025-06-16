@@ -1,5 +1,6 @@
 import os
 import logging
+import re
 from telegram import Update, ReplyKeyboardMarkup, KeyboardButton
 from telegram.ext import Updater, CommandHandler, MessageHandler, Filters, CallbackContext, ConversationHandler
 import time
@@ -21,7 +22,7 @@ logger = logging.getLogger(__name__)
 
 def start_keyboard():
     return ReplyKeyboardMarkup(
-        [[KeyboardButton("Send phone number", request_contact=True)]],
+        [[KeyboardButton("Отправить номер телефона", request_contact=True)]],
         resize_keyboard=True,
         one_time_keyboard=True
     )
@@ -34,6 +35,13 @@ def start(update: Update, context: CallbackContext):
     )
     return ASK_PHONE
 
+def is_valid_phone(phone: str) -> bool:
+    """Проверяет, является ли строка валидным номером телефона."""
+    # Удаляем все нецифровые символы
+    phone = re.sub(r'\D', '', phone)
+    # Проверяем длину (должно быть 10-15 цифр)
+    return 10 <= len(phone) <= 15
+
 def ask_screenshot(update: Update, context: CallbackContext):
     logger.info(f"User {update.effective_user.id} sent phone number")
     if update.message.contact:
@@ -42,17 +50,31 @@ def ask_screenshot(update: Update, context: CallbackContext):
     else:
         phone = update.message.text
         logger.info(f"Phone number from text: {phone}")
+        
+        # Проверяем валидность номера телефона
+        if not is_valid_phone(phone):
+            update.message.reply_text(
+                "❌ Пожалуйста, введите корректный номер телефона или поделитесь контактом, нажав на кнопку ниже.",
+                reply_markup=start_keyboard()
+            )
+            return ASK_PHONE
+    
     context.user_data['phone'] = phone
     
-    # Отправляем пример скриншота
+    # Отправляем пример скриншота с подробными инструкциями
     update.message.reply_text(
         "Спасибо! Теперь, пожалуйста, загрузите скриншот из старого приложения Subway с вашим бонусным балансом.\n\n"
+        "Как получить скриншот:\n"
+        "1. Откройте старое приложение Subway\n"
+        "2. Нажмите на три полоски (меню) в верхнем левом углу\n"
+        "3. Нажмите на свое имя/профиль\n"
+        "4. Сделайте скриншот экрана с балансом бонусов\n\n"
         "Вот пример того, как должен выглядеть скриншот:"
     )
     
     # Отправляем пример скриншота
     update.message.reply_photo(
-        photo='AgACAgIAAxkBAAIBRWhQJb4Z2HLhE8GCrCZs4n6_FyL0AAIh-DEbNSWBSmKQAiqZ2o50AQADAgADeQADNgQ',
+        photo='AgACAgIAAxkBAAIBsmhQLP_7jf7e8WPjy_MziDZmE7XNAAJm-DEbNSWBSqmshIIrHby9AQADAgADeQADNgQ',
         caption="Пример скриншота с балансом бонусов"
     )
     
@@ -126,9 +148,6 @@ def main():
     )
     dp.add_handler(conv_handler)
     dp.add_error_handler(error_handler)
-    
-    # Временно добавляем обработчик для получения file_id
-    dp.add_handler(MessageHandler(Filters.photo, get_file_id))
 
     logger.info("Bot is running...")
     updater.start_polling()
